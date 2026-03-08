@@ -1,19 +1,16 @@
+// /src/pages/Restock.js
 import React, { useState, useEffect, useRef } from "react";
 import "./Restock.css";
 
+
 export default function Restock() {
   const [restockHistory, setRestockHistory] = useState([]);
-  const [stockStatus, setStockStatus] = useState("in-stock");
   const [isConnected, setIsConnected] = useState(false);
-  const [lowStock, setLowStock] = useState(false);
-  const stockStatusRef = useRef("in-stock");
+
+  // ← pull shared state from context instead of local state
+  const { stockStatus, setStock, lowStock, setLowStock, stockStatusRef } = useStock();
 
   const RESTOCK_THRESHOLD_CM = 70;
-
-  const setStock = (val) => {
-    stockStatusRef.current = val;
-    setStockStatus(val);
-  };
 
   const triggerRestock = () => {
     if (stockStatusRef.current === "restock") return;
@@ -57,22 +54,17 @@ export default function Restock() {
           lines.forEach((line) => {
             const data = line.trim();
 
-            // Check if Arduino is sending a numeric distance value (in cm)
             const distance = parseFloat(data);
             if (!isNaN(distance)) {
               if (distance >= RESTOCK_THRESHOLD_CM) {
-                // Pad is 40cm or more away = low stock
                 setLowStock(true);
                 triggerRestock();
               }
-              // Do not auto-clear — user must click Resolved
             } else {
-              // Fallback: handle string signals from Arduino
               if (data === "RESTOCK" || data === "FAR" || data === "LOW") {
                 setLowStock(true);
                 triggerRestock();
               }
-              // Do not auto-clear — user must click Resolved
             }
           });
         }
@@ -86,6 +78,8 @@ export default function Restock() {
   useEffect(() => {
     connectToArduino();
   }, []);
+
+  // ── Everything below is 100% unchanged from your original ──
 
   return (
     <div className="restock-page" style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>

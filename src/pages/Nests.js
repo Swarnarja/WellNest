@@ -2,18 +2,25 @@
 import React from "react";
 import "./Nests.css";
 
-// For now, hard-code one icon at UBC Life Sciences (use Google Maps link)
-const nests = [
+
+const nestsData = [
   {
     name: "UBC Life Sciences Building",
     lat: 49.2636,
     lng: -123.2449,
-    hasPads: true, // Change for demo
   },
   // Add more locations as desired
 ];
 
 export default function Nests() {
+  const { stockStatus } = useStock(); // ← added
+
+  // ← hasPads is now driven by live sensor data instead of a hard-coded value
+  const nests = nestsData.map((nest) => ({
+    ...nest,
+    hasPads: stockStatus === "in-stock",
+  }));
+
   return (
     <div className="nests-map-page">
       <h2>Nearby Nests</h2>
@@ -31,7 +38,7 @@ export default function Nests() {
             <span>
               {nest.hasPads ? "🩸" : <s>🩸</s>}
               {nest.name}
-              {!nest.hasPads && <span className="empty-text"> (empty)</span>}
+              {!nest.hasPads && <span className="empty-text"> (out of stock)</span>}
             </span>
           </li>
         ))}
