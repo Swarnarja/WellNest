@@ -4,11 +4,12 @@ import "./Logo.css"; // You may need to create this if you want logo-specific st
 
 export default function Logo() {
   return (
-    <img
-      src="/logo.png"
-      alt="WellNest Logo"
-      className="logo"
-      style={{ width: 38, height: 38 }}
-    />
+    <div className="logo-wrapper">
+      <img
+        src="/logo.png"
+        alt="WellNest Logo"
+        className="logo"
+      />
+    </div>
   );
 }
