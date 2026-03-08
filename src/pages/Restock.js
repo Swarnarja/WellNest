@@ -15,22 +15,25 @@ export default function Restock() {
     setStockStatus(val);
   };
 
-  const triggerRestock = () => {
-    if (stockStatusRef.current === "restock") return;
-    const now = new Date();
-    const newEvent = {
-      id: now.getTime(),
-      date: now.toLocaleDateString(),
-      time: now.toLocaleTimeString(),
-    };
-    setRestockHistory((prevHistory) => [newEvent, ...prevHistory]);
-    setStock("restock");
-  };
 
   const markAsRestocked = () => {
     setStock("in-stock");
     setLowStock(false);
   };
+
+  useEffect(() => {
+    const triggerRestock = () => {
+      if (stockStatusRef.current === "restock") return;
+      const now = new Date();
+      const newEvent = {
+        id: now.getTime(),
+        date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString(),
+      };
+      setRestockHistory((prevHistory) => [newEvent, ...prevHistory]);
+      setStock("restock");
+    };
+
 
   const connectToArduino = async () => {
     try {
@@ -83,7 +86,6 @@ export default function Restock() {
     }
   };
 
-  useEffect(() => {
     connectToArduino();
   }, []);
 

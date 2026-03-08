@@ -2,7 +2,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import { Calendar, MapPin, Heart } from "lucide-react";
-import Logo from "./components/Logo";
+// import Logo from "./components/Logo";
 import Home from "./pages/Home";
 import Restock from "./pages/Restock";
 import Nests from "./pages/Nests";
