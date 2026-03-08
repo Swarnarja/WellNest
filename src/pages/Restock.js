@@ -5,8 +5,10 @@ export default function Restock() {
   const [restockHistory, setRestockHistory] = useState([]);
   const [stockStatus, setStockStatus] = useState("in-stock");
   const [isConnected, setIsConnected] = useState(false);
-  const [tooClose, setTooClose] = useState(false);
+  const [lowStock, setLowStock] = useState(false);
   const stockStatusRef = useRef("in-stock");
+
+  const RESTOCK_THRESHOLD_CM = 70;
 
   const setStock = (val) => {
     stockStatusRef.current = val;
@@ -27,6 +29,7 @@ export default function Restock() {
 
   const markAsRestocked = () => {
     setStock("in-stock");
+    setLowStock(false);
   };
 
   const connectToArduino = async () => {
@@ -53,13 +56,23 @@ export default function Restock() {
 
           lines.forEach((line) => {
             const data = line.trim();
-            if (data === "RESTOCK") {
-              triggerRestock();
-              setTooClose(false);
-            } else if (data === "TOO_CLOSE") {
-              setTooClose(true);
+
+            // Check if Arduino is sending a numeric distance value (in cm)
+            const distance = parseFloat(data);
+            if (!isNaN(distance)) {
+              if (distance >= RESTOCK_THRESHOLD_CM) {
+                // Pad is 40cm or more away = low stock
+                setLowStock(true);
+                triggerRestock();
+              }
+              // Do not auto-clear — user must click Resolved
             } else {
-              setTooClose(false);
+              // Fallback: handle string signals from Arduino
+              if (data === "RESTOCK" || data === "FAR" || data === "LOW") {
+                setLowStock(true);
+                triggerRestock();
+              }
+              // Do not auto-clear — user must click Resolved
             }
           });
         }
@@ -89,7 +102,7 @@ export default function Restock() {
 
       <h2>Inventory Status</h2>
 
-      {tooClose && (
+      {lowStock && (
         <div style={{
           backgroundColor: "#fff8e1",
           border: "2px solid #f9a825",
@@ -102,7 +115,7 @@ export default function Restock() {
           gap: "12px"
         }}>
           <div style={{ backgroundColor: "#f9a825", borderRadius: "8px", width: "28px", height: "28px", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: "bold" }}>!</div>
-          <span style={{ fontWeight: "700", color: "#e65100" }}>⚠️ Too Close! Please move away from the sensor.</span>
+          <span style={{ fontWeight: "700", color: "#e65100" }}>⚠️ Low Stock! Pad is {RESTOCK_THRESHOLD_CM}cm or more from sensor — restock soon.</span>
         </div>
       )}
 
