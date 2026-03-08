@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+// Directory structure:
+// /public/logo.png                (put any logo image here as placeholder)
+// /src/components/Logo.js
+// /src/pages/Home.js
+// /src/pages/Tracker.js
+// /src/pages/Nests.js
+// /src/App.js
+// /src/index.js
+// /src/index.css
+// /src/App.css
 
-function App() {
+// Here's the code for the main app and all three pages:
+
+// /src/App.js
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Logo from "./components/Logo";
+import Home from "./pages/Home";
+import Tracker from "./pages/Tracker";
+import Nests from "./pages/Nests";
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/tracker">Tracker</Link>
+        <Link to="/nests">Nests</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/tracker" element={<Tracker />} />
+        <Route path="/nests" element={<Nests />} />
+      </Routes>
+    </Router>
   );
 }
-
-export default App;
